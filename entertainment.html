@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elderly Entertainment</title>
+    <style>
+                /* Navigation Bar */
+                .navbar {
+                    display: flex;
+                    justify-content: center;
+                    background-color: #4f46e5;
+                    padding: 10px;
+                    position: sticky;
+                    top: 0;
+                    z-index: 1000;
+                }
+        
+                .navbar a {
+                    color: white;
+                    text-decoration: none;
+                    padding: 12px 20px;
+                    font-size: 16px;
+                    border-radius: 20px;
+                    transition: background-color 0.3s;
+                }
+        
+                .navbar a:hover {
+                    background-color: #4338ca;
+                }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        .video-suggestions, .mind-game {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        iframe {
+            width: 100%;
+            height: 315px;
+            margin: 10px 0;
+        }
+        canvas {
+            border: 1px solid #333;
+            margin-top: 10px;
+        }
+        button, select {
+            margin: 5px;
+            padding: 15px;
+            font-size: 20px;
+            border: none;
+            background-color: #6200ea;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        label {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+        <!-- Navigation Bar -->
+        <div class="navbar">
+            <a href="index.html">Home</a>
+            <a href="water_intake.html">Water Intake</a>
+            <a href="medicine_reminder.html">Medicine Reminder</a>
+            <a href="entertainment.html">Entertainment</a>
+            <a href="Profile.html">Profile</a>
+        </div>
+    <h1>Entertainment for Elders</h1>
+    <div class="video-suggestions">
+        <h2>Recommended Videos</h2>
+        <label for="video-filter">Choose a category:</label>
+        <select id="video-filter" onchange="filterVideos()">
+            <option value="all">All</option>
+            <option value="music">Music</option>
+            <option value="nature">Nature</option>
+            <option value="exercise">Exercise</option>
+        </select>
+        <div id="video-list">
+            <iframe src="https://www.youtube.com/embed/FjHGZj2IjBk?si=qDADdunjw8xejMqz" data-category="music" title="Music Video"></iframe>
+            <iframe src="https://www.youtube.com/embed/BHACKCNDMW8?si=_FbLKJ2A9kBo8PIx" data-category="nature" title="Nature Video"></iframe>
+            <iframe src="https://www.youtube.com/embed/L_xrDAtykMI" data-category="exercise" title="Exercise Video"></iframe>
+        </div>
+    </div>
+    <div class="mind-game">
+        <h2>Advanced Puzzle Game</h2>
+        <canvas id="puzzleCanvas" width="300" height="300"></canvas>
+        <br>
+        <button onclick="shufflePuzzle()">Shuffle</button>
+        <p id="status"></p>
+        <script>
+            function filterVideos() {
+                const category = document.getElementById("video-filter").value;
+                const videos = document.querySelectorAll("#video-list iframe");
+                videos.forEach(video => {
+                    if (category === "all" || video.getAttribute("data-category") === category) {
+                        video.style.display = "block";
+                    } else {
+                        video.style.display = "none";
+                    }
+                });
+            }
+            const canvas = document.getElementById("puzzleCanvas");
+            const ctx = canvas.getContext("2d");
+            const size = 3;
+            const tileSize = canvas.width / size;
+            let tiles = [...Array(size * size).keys()];
+            tiles[tiles.length - 1] = 0; // Empty space
+            let emptyIndex = tiles.length - 1;
+
+
+            function drawPuzzle() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < tiles.length; i++) {
+                    const x = (i % size) * tileSize;
+                    const y = Math.floor(i / size) * tileSize;
+                    if (tiles[i] !== 0) {
+                        ctx.fillStyle = "#fff";
+                        ctx.fillRect(x, y, tileSize, tileSize);
+                        ctx.strokeRect(x, y, tileSize, tileSize);
+                        ctx.fillStyle = "#333";
+                        ctx.font = "20px Arial";
+                        ctx.fillText(tiles[i], x + tileSize / 2 - 5, y + tileSize / 2 + 5);
+                    }
+                }
+            }
+
+            function isSolved() {
+                for (let i = 0; i < tiles.length - 1; i++) {
+                    if (tiles[i] !== i + 1) return false;
+                }
+                return true;
+            }
+
+            function swap(index1, index2) {
+                [tiles[index1], tiles[index2]] = [tiles[index2], tiles[index1]];
+            }
+
+            function moveTile(index) {
+                const row = Math.floor(index / size);
+                const col = index % size;
+                const emptyRow = Math.floor(emptyIndex / size);
+                const emptyCol = emptyIndex % size;
+                if ((Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) === 1) {
+                    swap(index, emptyIndex);
+                    emptyIndex = index;
+                    drawPuzzle();
+                    if (isSolved()) {
+                        document.getElementById("status").textContent = "Puzzle Solved!";
+                    }
+                }
+            }
+
+            canvas.addEventListener("click", (e) => {
+                const x = e.offsetX;
+                const y = e.offsetY;
+                const col = Math.floor(x / tileSize);
+                const row = Math.floor(y / tileSize);
+                const index = row * size + col;
+                moveTile(index);
+            });
+
+            function shufflePuzzle() {
+                for (let i = 0; i < 100; i++) {
+                    const neighbors = [emptyIndex - 1, emptyIndex + 1, emptyIndex - size, emptyIndex + size].filter(n => n >= 0 && n < tiles.length);
+                    const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
+                    moveTile(randomNeighbor);
+                }
+                drawPuzzle();
+                document.getElementById("status").textContent = "";
+            }
+
+            drawPuzzle();
+        </script>
+    </div>
+</body>
+</html>

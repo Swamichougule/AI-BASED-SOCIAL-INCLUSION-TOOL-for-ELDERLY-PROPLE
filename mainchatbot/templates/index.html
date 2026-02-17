@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elderly Care Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    
+    <div class="chatbot">
+        <div class="chat-header">Elderly Care Chatbot</div>
+        <div class="chat-body" id="chat-body"></div>
+        <div class="chat-footer">
+            <input type="text" id="user-input" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+            <button id="stop-button" onclick="stopTyping()" disabled>Stop</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

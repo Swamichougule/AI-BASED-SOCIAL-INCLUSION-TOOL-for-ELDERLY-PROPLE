@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Companion</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background-color: #4f46e5;
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: #4338ca;
+        }
+
+        /* Main Content Styles */
+        #chat-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            font-size: 24px;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s;
+        }
+
+        #chat-icon:hover {
+            background-color: #0056b3;
+        }
+
+        #chat-container {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 350px;
+            height: 450px;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        .chat-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    
+    
+    </style>
+</head> 
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="waterintake.html">Water Intake</a>
+        <a href="http://127.0.0.1:8001/">Medicine Reminder</a>
+        <a href="entertainment.html">Entertainment</a>
+    
+    </div>
+
+    <!-- Header Section -->
+    <header>
+        <h1>YOUR WELLNESS COMPANION</h1>
+    </header>
+
+    <!-- Main Content Section -->
+    <section class="main-content">
+        <div class="content">
+            <div class="left-box">
+                <h2>Talk with AI</h2>
+                <a href="http://127.0.0.1:5000/">
+                    <button class="button">ChatAI</button>
+                  </a>  
+            </div>
+
+            <div class="image-box">
+                <img src="home.webp" alt="Wellness Reminder">
+            </div>
+
+            <div class="right-box">
+                <h2 id="status-message">Register</h2>   
+                <a id="action-link" href="http://localhost/Login_system/register.php">
+                    <button class="button" id="action-button">Create an Account</button>
+                </a>  
+            </div>
+            
+            <script>
+                // Check URL parameters to display the appropriate message and link
+                const urlParams = new URLSearchParams(window.location.search);
+                const statusMessage = document.getElementById('status-message');
+                const actionButton = document.getElementById('action-button');
+                const actionLink = document.getElementById('action-link');
+            
+                if (urlParams.get('registered') === 'true') {
+                    statusMessage.textContent = "Account Created Successfully!";
+                    actionButton.textContent = "Login Now";
+                    actionLink.href = "http://localhost/Login_system/login.php";
+                }
+            
+                if (urlParams.get('loggedin') === 'true') {
+                    statusMessage.textContent = "Welcome Back!";
+                    actionButton.textContent = "Go to Profile";
+                    actionLink.href = "http://localhost/Login_system/profile.php";
+                }
+            </script>
+            
+
+
+        </div>
+    </section>
+
+    <!-- Circles Section -->
+    <section class="circles-section">
+        <div class="circles">
+            <a href="waterintake.html"> <div class="circle">Water intake</div> </a>
+            <a href="http://127.0.0.1:8001"> <div class="circle">Medicine intake</div> </a>
+            <a href="entertainment.html"> <div class="circle">Entertainment</div> </a>
+        </div>
+    </section>
+
+
+</body>
+</html>

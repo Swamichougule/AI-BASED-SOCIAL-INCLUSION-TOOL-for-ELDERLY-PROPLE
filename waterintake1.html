@@ -1,0 +1,222 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Intake Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+ /* Navigation Bar */
+.navbar {
+    display: flex;
+    justify-content: center;
+    background-color: #4f46e5;
+    padding: 10px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+}
+
+.navbar a:hover {
+    background-color: #4338ca;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    padding-top: 60px; /* Adjusted for navbar height */
+}
+
+        .container {
+            width: 80%;
+            max-width: 700px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .charts {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .chart-container {
+            width: 45%;
+            max-width: 400px;
+        }
+        canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="index.html">Home</a>
+        <a href="water_intake.html">Water Intake</a>
+        <a href="medicine_reminder.html">Medicine Reminder</a>
+        <a href="entertainment.html">Entertainment</a>
+        <a href="Profile.html">Profile</a>
+        
+    </div>
+    <div class="container">
+        <h2>Water Intake Tracker</h2>
+        <form id="detailsForm">
+            <input type="number" id="weight" placeholder="Enter your weight (kg)" required>
+            <input type="number" id="age" placeholder="Enter your age" required>
+            <input type="number" id="height" placeholder="Enter your height (cm)" required>
+            <button type="submit">Set Details</button>
+        </form>
+        <form id="waterForm" style="display: none;">
+            <input type="number" id="glassSize" placeholder="Glass size (ml)" required>
+            <input type="number" id="numberOfGlasses" placeholder="Number of glasses" required>
+            <button type="submit">Add Intake</button>
+        </form>
+        <div id="notification"></div>
+        <div class="charts">
+            <div class="chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const detailsForm = document.getElementById('detailsForm');
+        const waterForm = document.getElementById('waterForm');
+        const barChartCanvas = document.getElementById('barChart');
+        const pieChartCanvas = document.getElementById('pieChart');
+        const notificationDiv = document.getElementById('notification');
+
+        let totalIntake = 0;
+        let intakeData = [];
+        let labels = [];
+        let dailyGoal = 3000;
+
+        detailsForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const weight = parseInt(document.getElementById('weight').value);
+            const age = parseInt(document.getElementById('age').value);
+            const height = parseInt(document.getElementById('height').value);
+            
+            if (weight > 0 && age > 0 && height > 0) {
+                dailyGoal = (weight * 35) + (age * 5) + (height * 10);
+                detailsForm.style.display = 'none';
+                waterForm.style.display = 'block';
+                updateCharts();
+            }
+        });
+
+        const barChart = new Chart(barChartCanvas, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Water Intake (ml)',
+                    data: intakeData,
+                    backgroundColor: '#00796b',
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Intake (ml)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time of Intake'
+                        }
+                    }
+                }
+            }
+        });
+
+        const pieChart = new Chart(pieChartCanvas, {
+            type: 'pie',
+            data: {
+                labels: ['Consumed', 'Remaining'],
+                datasets: [{
+                    data: [0, dailyGoal],
+                    backgroundColor: ['#00796b', '#b2dfdb'],
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Water Consumption vs Remaining'
+                    }
+                }
+            }
+        });
+
+        waterForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const glassSize = parseInt(document.getElementById('glassSize').value);
+            const numberOfGlasses = parseInt(document.getElementById('numberOfGlasses').value);
+            
+            const intake = glassSize * numberOfGlasses;
+            totalIntake += intake;
+            intakeData.push(intake);
+            const currentTime = new Date().toLocaleTimeString();
+            labels.push(currentTime);
+            
+            updateCharts();
+            waterForm.reset();
+        });
+
+        function updateCharts() {
+            const remainingWater = Math.max(dailyGoal - totalIntake, 0);
+            
+            barChart.data.labels = labels;
+            barChart.data.datasets[0].data = intakeData;
+            barChart.update();
+            
+            pieChart.data.datasets[0].data = [totalIntake, remainingWater];
+            pieChart.update();
+            
+            notificationDiv.textContent = `You have ${remainingWater} ml remaining out of your daily target of ${dailyGoal} ml.`;
+        }
+    </script>
+</body>
+</html>
